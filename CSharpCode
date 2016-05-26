@@ -1,0 +1,47 @@
+
+https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fc
+using System;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Net.Http;
+using System.Web;
+
+namespace CSHttpClientSample
+{
+    static class Program
+    {
+        static void Main()
+        {
+            MakeRequest();
+            Console.WriteLine("Hit ENTER to exit...");
+            Console.ReadLine();
+        }
+        
+        static async void MakeRequest()
+        {
+            var client = new HttpClient();
+            var queryString = HttpUtility.ParseQueryString(string.Empty);
+
+            // Request headers
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{subscription key}");
+
+            // Request parameters
+            queryString["language"] = "unk";
+            queryString["detectOrientation "] = "true";
+            var uri = "https://api.projectoxford.ai/vision/v1.0/ocr?" + queryString;
+
+            HttpResponseMessage response;
+
+            // Request body
+            byte[] byteData = Encoding.UTF8.GetBytes("{body}");
+
+            using (var content = new ByteArrayContent(byteData))
+            {
+               content.Headers.ContentType = new MediaTypeHeaderValue("< your content type, i.e. application/json >");
+               response = await client.PostAsync(uri, content);
+            }
+
+        }
+    }
+}	
+

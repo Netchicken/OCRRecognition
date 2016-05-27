@@ -1,20 +1,22 @@
-﻿using System;
+﻿//https://www.microsoft.com/cognitive-services/en-us/computer-vision-api/documentation/ocr 
+//https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fa
+using System;
 using Android.App;
 using Android.Content;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+
 using System.Net.Http.Headers;
-using System.Text;
 using System.Net.Http;
 using System.Web;
+using Android.Media;
+using Encoding = System.Text.Encoding;
 
 namespace OCRRecognition {
     [Activity(Label = "OCRRecognition", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity {
-        int count = 1;
-
         protected override void OnCreate(Bundle bundle) {
             base.OnCreate(bundle);
 
@@ -23,18 +25,32 @@ namespace OCRRecognition {
 
             // Get our button from the layout resource,
             // and attach an event to it
-            Button button = FindViewById<Button>(Resource.Id.MyButton);
+            Button loadImage = FindViewById<Button>(Resource.Id.LoadImage);
+            Button sendImage = FindViewById<Button>(Resource.Id.SendImage);
+            loadImage.Click += LoadImage;
+            sendImage.Click += SendImage;
+            }
+        private void LoadImage(object sender, EventArgs e) {
+            //https://developer.xamarin.com/guides/xamarin-forms/working-with/images/
+            StartActivity(typeof(Gallery));
+            // var beachImage = new Image { Aspect = Aspect.AspectFit };
+            // beachImage.Source = ImageSource.FromFile("waterfront.jpg");
 
-            button.Click += delegate { button.Text = string.Format("{0} clicks!", count++); };
+
+            }
+        private void SendImage(object sender, EventArgs e) {
+            MakeRequest();
             }
 
+
+        //https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fc/console 
 
         static async void MakeRequest() {
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{subscription key}");
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{}");
 
             // Request parameters
             queryString["language"] = "unk";

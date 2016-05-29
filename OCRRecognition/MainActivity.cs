@@ -11,12 +11,14 @@ using Android.OS;
 using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Web;
+using Android.Graphics;
 using Android.Media;
 using Encoding = System.Text.Encoding;
 
 namespace OCRRecognition {
     [Activity(Label = "OCRRecognition", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity {
+        private static TextView ResultText;
         protected override void OnCreate(Bundle bundle) {
             base.OnCreate(bundle);
 
@@ -27,6 +29,7 @@ namespace OCRRecognition {
             // and attach an event to it
             Button loadImage = FindViewById<Button>(Resource.Id.LoadImage);
             Button sendImage = FindViewById<Button>(Resource.Id.SendImage);
+            ResultText = FindViewById<TextView>(Resource.Id.TextResult);
             loadImage.Click += LoadImage;
             sendImage.Click += SendImage;
             }
@@ -46,6 +49,8 @@ namespace OCRRecognition {
         //https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fc/console 
 
         static async void MakeRequest() {
+
+            //var uri = Android.Net.Uri.Parse("PathToYourResource"); 
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
@@ -60,11 +65,14 @@ namespace OCRRecognition {
             HttpResponseMessage response;
 
             // Request body
-            byte[] byteData = Encoding.UTF8.GetBytes("{body}");
+            Bitmap image = Bitmap.CreateBitmap((Bitmap)Resource.Drawable.sign);
+            byte[] byteData = Encoding.UTF8.GetBytes("{image}");
 
             using (var content = new ByteArrayContent(byteData)) {
-                content.Headers.ContentType = new MediaTypeHeaderValue("< your content type, i.e. application/json >");
+                content.Headers.ContentType = new MediaTypeHeaderValue("< application/json >");
                 response = await client.PostAsync(uri, content);
+                ResultText.Text = response.ToString();
+
                 }
 
             }

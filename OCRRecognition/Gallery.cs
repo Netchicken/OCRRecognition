@@ -1,27 +1,32 @@
 //https://developer.xamarin.com/recipes/android/other_ux/pick_image/
+//https://developer.xamarin.com/recipes/android/other_ux/camera_intent/take_a_picture_and_save_using_camera_app/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Uri = Android.Net.Uri;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
+using Android.Provider;
 using Android.Widget;
+using Java.IO;
+using Environment = Android.OS.Environment;
+using Uri = Android.Net.Uri;
+
+public static class App { //added a class here instead of a separate sheet
+    public static File _file;
+    public static File _dir;
+    public static Bitmap bitmap;
+    }
+
 
 namespace OCRRecognition {
     [Activity(Label = "Gallery")]
     public class Gallery : Activity {
 
-        public static readonly int PickImageId = 1000; //An Id that is used to get the right OnActivityResult coming back 
+        //  public static readonly int TaskId = 1000; //An Id that is used to get the right OnActivityResult coming back 
         private ImageView _imageView;
         private string tag = "aaaa";
-
+        //  Uri PicUri;// = Uri.Parse("content://media/external/images/media/5507");
 
 
         protected override void OnCreate(Bundle savedInstanceState) {
@@ -29,39 +34,88 @@ namespace OCRRecognition {
 
             SetContentView(Resource.Layout.ImageGallery);
             _imageView = FindViewById<ImageView>(Resource.Id.imageView1);
-            //Uri uri = Uri.Parse("content://media/external/images/media/5507");
+
+            CreateDirectoryForPictures();
+
+
             // _imageView.getl
-            _imageView.SetImageResource(Resource.Drawable.sign);
+            //    _imageView.SetImageResource(Resource.Drawable.sign);
             Button pickImage = FindViewById<Button>(Resource.Id.PickImage);
             pickImage.Click += pickImageClick;
+
+
+
+
             }
 
+        private void CreateDirectoryForPictures() {
+            App._dir = new File(
+                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR");
+            if (!App._dir.Exists()) {
+                App._dir.Mkdirs();
+                }
+            }
+
+
         private void pickImageClick(object sender, EventArgs e) {
-            Intent = new Intent();
-            Intent.SetType("image/*");
-            Intent.SetAction(Intent.ActionGetContent);
-            //shows the gallery and passes back the chosen one
-            StartActivityForResult(Intent.CreateChooser(Intent, "Select an Image"), PickImageId);
+
+            //camera action
+            Intent intent = new Intent(MediaStore.ActionImageCapture);
+
+            // App._file = new File(App._dir, String.Format("myPhoto_{0}.jpg", Guid.NewGuid()));
+
+            //delete the last file so we only have one file called OCR.jpg
+            App._file = new File(App._dir, "OCR.jpg");
+            if (App._file.Exists()) {
+                App._file.Delete();
+                }
+
+            App._file = new File(App._dir, "OCR.jpg");
+            intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(App._file));
+
+            StartActivityForResult(intent, 0);
             }
 
         //the result of the StartActivityForResult
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data) {
-            //      1000,                                 OK ,    The Data property of the Intent returned to OnActivityResult will contain the Uri of the selected image. We check the result in case the user cancelled the selection.
-            if ((requestCode == PickImageId) && (resultCode == Result.Ok) && (data != null)) {
-                //http://stackoverflow.com/questions/17356312/converting-of-uri-to-string/17356461#17356461
+            base.OnActivityResult(requestCode, resultCode, data);
 
-                String uriString = data.DataString;
+            // Make it available in the gallery
 
-                Log.Info(tag, data.DataString);
+            Intent mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile);
+            Uri contentUri = Uri.FromFile(App._file);
+            mediaScanIntent.SetData(contentUri);
+            SendBroadcast(mediaScanIntent); //tell everything about the new pic?
 
-                Uri uri = Uri.Parse(uriString);
+            // Display in ImageView. We will resize the bitmap to fit the display
+            // Loading the full sized image will consume too much memory 
+            // and cause the application to crash.
 
-                _imageView.SetImageURI(uri);
-                }
+
+            var path = new File(
+                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").Path;
+
+            var imagepath = System.IO.Path.Combine(path, "OCR.jpg");
+            //the path to the image
+            var imageFilePath = new File(imagepath);
+            //load the image
+            //  Bitmap image = BitmapFactory.DecodeFile(imageFilePath.AbsolutePath);
+
+            if (System.IO.File.Exists(imageFilePath.ToString())) {
+            int height = Resources.DisplayMetrics.HeightPixels;
+            int width = _imageView.Height;
+
+            BitmapHelpers.ResizeBitmap(imageFilePath.ToString(), width, height);
+   }
+            //if (image != null) {
+            //    //  _imageView.SetImageBitmap(image);
+
+            //    App.bitmap = null;
+            //    }
+
+            // Dispose of the Java side bitmap.
+            GC.Collect();
             }
 
         }
-
-
-
     }

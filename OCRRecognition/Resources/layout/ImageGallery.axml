@@ -16,12 +16,10 @@
         android:id="@+id/scrollView1">
         <ImageView
             android:src="@android:drawable/ic_menu_gallery"
-           android:id="@+id/imageView1"
-            android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scaleType="centerInside"
-    android:adjustViewBounds="true"/>
+            android:id="@+id/imageView1"
+             android:layout_width="fill_parent"
+        android:layout_height="300.0dp"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true" />
     </ScrollView>
 </LinearLayout>
-
-<!--https://guides.codepath.com/android/Working-with-the-ImageView-->

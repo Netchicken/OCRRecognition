@@ -8,25 +8,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="&quot;Load Image&quot;" />
-    <ImageView
-        android:src="@android:drawable/ic_menu_gallery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView1" />
     <Button
         android:text="Send Image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/SendImage" />
-    <TextView
-        android:text="The Text is ...."
+    <ScrollView
+        android:minWidth="25px"
+        android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <EditText
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/TextResult"
-        android:textSize="15dip" />
+        android:id="@+id/scrollView1">
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout1">
+            <ImageView
+                android:src="@android:drawable/ic_menu_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView1" />
+            <TextView
+                android:text="The Text is ...."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView1" />
+            <EditText
+                android:inputType="textMultiLine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/TextResult"
+                android:textSize="15dip" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -63,18 +63,18 @@ namespace OCRRecognition {
             var filePath = System.IO.Path.Combine(path, "test.jpg");
 
             //true if the caller has the required permissions and path contains the name of an existing file; otherwise, false. This method also returns false if path is null, an invalid path, or a zero-length string.
-            if (System.IO.File.Exists(filePath)) {
-                Bitmap bitmap = BitmapFactory.DecodeFile(filePath);
+            //if (System.IO.File.Exists(filePath)) {
+                Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filePath);
                 // _imageView.SetImageBitmap(bitmap);
-                return bitmap;
+                return  bitmap;
                 //   bitmap.Recycle();
-                GC.Collect();
+              //  GC.Collect();
 
                 //  App.bitmap = null;
-                } else {
-                Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
-                return null;
-                }
+                //} else {
+                //Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
+                //return null;
+                //}
             }
 
         private void CreateDirectoryForPictures() {

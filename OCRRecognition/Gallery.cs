@@ -2,6 +2,7 @@
 //https://developer.xamarin.com/recipes/android/other_ux/camera_intent/take_a_picture_and_save_using_camera_app/
 
 using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -41,11 +42,39 @@ namespace OCRRecognition {
             // _imageView.getl
             //    _imageView.SetImageResource(Resource.Drawable.sign);
             Button pickImage = FindViewById<Button>(Resource.Id.PickImage);
+            Button LoadImage = FindViewById<Button>(Resource.Id.LoadImage);
             pickImage.Click += pickImageClick;
+            LoadImage.Click += loadImageClick;
 
 
 
+            }
 
+        private async void loadImageClick(object sender, EventArgs e) {
+            //if the app is there load it 
+            Bitmap bitmap = await GetImage();
+            _imageView.SetImageBitmap(bitmap);
+
+            }
+
+        async Task<Bitmap> GetImage() {
+            var path = new File(
+                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
+            var filePath = System.IO.Path.Combine(path, "test.jpg");
+
+            //true if the caller has the required permissions and path contains the name of an existing file; otherwise, false. This method also returns false if path is null, an invalid path, or a zero-length string.
+            if (System.IO.File.Exists(filePath)) {
+                Bitmap bitmap = BitmapFactory.DecodeFile(filePath);
+                // _imageView.SetImageBitmap(bitmap);
+                return bitmap;
+                //   bitmap.Recycle();
+                GC.Collect();
+
+                //  App.bitmap = null;
+                } else {
+                Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
+                return null;
+                }
             }
 
         private void CreateDirectoryForPictures() {
@@ -102,13 +131,15 @@ namespace OCRRecognition {
             //  Bitmap image = BitmapFactory.DecodeFile(imageFilePath.AbsolutePath);
 
             if (System.IO.File.Exists(imageFilePath.ToString())) {
-            int height = Resources.DisplayMetrics.HeightPixels;
-            int width = _imageView.Height;
+                int height = Resources.DisplayMetrics.HeightPixels;
+                int width = _imageView.Height;
 
-            BitmapHelpers.ResizeBitmap(imageFilePath.ToString(), width, height);
-   }
-            //if (image != null) {
-            //    //  _imageView.SetImageBitmap(image);
+                BitmapHelpers.ResizeBitmap(imageFilePath.ToString(), width, height);
+                }
+
+            //if the app is there load it 
+            //if (App.bitmap != null) {
+            //    _imageView.SetImageBitmap(App.bitmap);
 
             //    App.bitmap = null;
             //    }

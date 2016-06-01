@@ -14,11 +14,14 @@ using Android.Util;
 using Environment = Android.OS.Environment;
 using File = Java.IO.File;
 
-namespace OCRRecognition {
-    public static class BitmapHelpers {
+namespace OCRRecognition
+{
+    public static class BitmapHelpers
+    {
         private static string tag = "aaaaa";
 
-        public static async void ResizeBitmap(string fileName, int width, int height) {
+        public static async void ResizeBitmap(string fileName, int width, int height)
+        {
             // First we get the the dimensions of the file on disk then set all the options we need to resize it.
             //InJustDecodeBounds = false; if set to true, the decoder will return null (no bitmap), but the out... fields will still be set, allowing the caller to query the bitmap without having to allocate the memory for its pixels. 
 
@@ -36,7 +39,8 @@ namespace OCRRecognition {
             //just generates the sample size
             //For example, consider an image that is 4000x3000 pixels with a bitmap configuration of Argb8888. It would require approximately 46.8MB of RAM to load the full image into memory. It is better to load a smaller version of the image. To tell the decoder to subsample the image and load a smaller version into memory, set InSampleSize to a value that will be used to scale down the image. For example, setting InSampleSize to 2 will cause BitmapFactory to scale the image down by a factor of 2. Any value can be used, however BitmapFactory is optimized to use a value that is factor of 2.
 
-            if (outHeight > height || outWidth > width) {
+            if (outHeight > height || outWidth > width)
+            {
 
                 int halfHeight = height / 2;
                 int halfWidth = width / 2;
@@ -44,12 +48,13 @@ namespace OCRRecognition {
                 // inSampleSize = outWidth > outHeight ? outHeight / height : outWidth / width;
 
                 // Calculate the largest inSampleSize value that is a power of 2 and keeps both height and width larger than the requested height and width.
-                while ((halfHeight / inSampleSize) > height && (halfWidth / inSampleSize) > width) {
+                while ((halfHeight / inSampleSize) > height && (halfWidth / inSampleSize) > width)
+                {
                     inSampleSize *= 4;
-                    }
-
                 }
-            inSampleSize = 4;
+
+            }
+            inSampleSize = 2;
 
             Log.Info(tag, "inSampleSize " + inSampleSize);
             // Now we will load the image and have BitmapFactory resize it for us.
@@ -59,12 +64,13 @@ namespace OCRRecognition {
 
             SaveBitmapAsJPG(resizedBitmap);
             //    return resizedBitmap;
-            }
+        }
 
 
 
 
-        public static async void SaveBitmapAsJPG(Bitmap bitmap) {
+        public static async void SaveBitmapAsJPG(Bitmap bitmap)
+        {
             // var sdCardPath = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
             //rotate a bmp
             Matrix matrix = new Matrix();
@@ -75,12 +81,12 @@ namespace OCRRecognition {
                 Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath;
             var filePath = System.IO.Path.Combine(path, "test.jpg");
             var stream = new FileStream(filePath, FileMode.Create);
-            await rotatedBitmap.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, stream);
+            await rotatedBitmap.CompressAsync(Bitmap.CompressFormat.Jpeg, 70, stream);
             stream.Close();
             await stream.FlushAsync();
             // Free the native object associated with this bitmap, and clear the reference to the pixel data. This will not free the pixel data synchronously; it simply allows it to be garbage collected if there are no other references. The bitmap is marked as "dead", meaning it will throw an exception if getPixels() or setPixels() is called, and will draw nothing. 
             //  bitmap.Recycle();
-            GC.Collect();
-            }
+       //     GC.Collect();
         }
     }
+}

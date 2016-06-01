@@ -3,16 +3,26 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/LoadImage"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="&quot;Load Image&quot;" />
-    <Button
-        android:text="Send Image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/SendImage" />
+        android:id="@+id/linearLayout2">
+        <Button
+            android:id="@+id/LoadImage"
+            android:text="Load Image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <Button
+            android:text="Send Image"
+            android:id="@+id/SendImage"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
     <ScrollView
         android:minWidth="25px"
         android:minHeight="25px"
@@ -26,11 +36,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/linearLayout1">
-            <ImageView
-                android:src="@android:drawable/ic_menu_gallery"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView1" />
             <TextView
                 android:text="The Text is ...."
                 android:layout_width="match_parent"
@@ -39,9 +44,15 @@
             <EditText
                 android:inputType="textMultiLine"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/TextResult"
-                android:textSize="15dip" />
+                android:textSize="25dp"
+                android:focusable="false" />
+            <ImageView
+                android:src="@android:drawable/ic_menu_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView1" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

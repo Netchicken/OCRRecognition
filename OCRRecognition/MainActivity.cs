@@ -11,6 +11,7 @@ using Android.OS;
 
 using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Android.Graphics;
@@ -18,6 +19,10 @@ using Android.Media;
 using Android.Util;
 using Encoding = System.Text.Encoding;
 using File = Java.IO.File;
+using Microsoft.ProjectOxford;
+using Microsoft.ProjectOxford.Vision;
+using Microsoft.ProjectOxford.Vision.Contract;
+
 
 namespace OCRRecognition
 {
@@ -95,69 +100,104 @@ namespace OCRRecognition
         {
 
             // var uri = Android.Net.Uri.Parse("PathToYourResource"); 
-            var Httpclient = new HttpClient();
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
+            //  var Httpclient = new HttpClient();
+            // var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            Httpclient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "");
+            //  Httpclient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "");
 
-            //http://javatechig.com/xamarin/upload-bitmap-image-to-server-using-http-multipart-in-xamarin-android 
-            // Request parameters
-            queryString["language"] = "unk";
-            queryString["detectOrientation "] = "true";
-            var uri = "https://api.projectoxford.ai/vision/v1.0/ocr?" + queryString;
-            Log.Info(tag, "uri " + uri);
-            HttpResponseMessage response;
+            VisionServiceClient VisionServiceClient = new VisionServiceClient("");
 
-            // Request body
-            // Bitmap image = Bitmap.CreateBitmap((Bitmap)Resource.Drawable.sign);
 
-            string url =
-                "http://lh4.ggpht.com/_gKQKwLZ8XUs/TAevIEb8FkI/AAAAAAAAC3w/8kMg7Yze__Q/s800/Funny-Signs-Sharp-45.jpg";
-            byte[] byteData = Encoding.UTF8.GetBytes(url);
-
-            using (var fileContent = new ByteArrayContent(byteData))
+            using (System.IO.Stream imageFileStream = System.IO.File.OpenRead(ImageFilePath))
             {
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue("< application/json >");
+                //
+                // Upload an image and perform OCR
+                //
+                OcrResults ocrResult = await VisionServiceClient.RecognizeTextAsync(imageFileStream, "unk", true);
 
-                Log.Info(tag, "content " + fileContent);
-                //gets sent here with uri and content
-                response = await Httpclient.PostAsync(uri, fileContent);
-                ResultText.Text = response.ToString();
+                //  var  results = new Microsoft.ProjectOxford.Vision.Contract.OcrResults();
+                //   ResultText.Text = ocrResult.Language + " " + ocrResult.Regions + " " + ocrResult.Orientation + " " + ocrResult.ToString();
+
+                ShowRetrieveText(ocrResult);
 
             }
 
+
         }
 
-        public async Task<String> UploadBitmapAsync(Bitmap bitmap)
-        { //http://javatechig.com/xamarin/upload-bitmap-image-to-server-using-http-multipart-in-xamarin-android
-            byte[] bitmapData;
-            var stream = new MemoryStream();
-            bitmap.Compress(Bitmap.CompressFormat.Jpeg, 0, stream);
-            bitmapData = stream.ToArray();
-            var fileContent = new ByteArrayContent(bitmapData);
 
-            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
-            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-            {
-                Name = "file",
-                FileName = "my_uploaded_image.jpg"
-            };
 
-            string boundary = "---8d0f01e6b3b5dafaaadaad";
-            MultipartFormDataContent multipartContent = new MultipartFormDataContent(boundary);
-            multipartContent.Add(fileContent);
-            string UPLOAD_IMAGE = "http://YOUR_SERVER/api/poi/upload";
-            HttpClient httpClient = new HttpClient();
-            HttpResponseMessage response = await httpClient.PostAsync(UPLOAD_IMAGE, multipartContent);
-            if (response.IsSuccessStatusCode)
+        private static void ShowRetrieveText(OcrResults results)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            if (results != null && results.Regions != null)
             {
-                string content = await response.Content.ReadAsStringAsync();
-                return content;
+                stringBuilder.Append("Text: ");
+                stringBuilder.AppendLine();
+                foreach (var item in results.Regions)
+                {
+                    foreach (var line in item.Lines)
+                    {
+                        foreach (var word in line.Words)
+                        {
+                            stringBuilder.Append(word.Text);
+                            stringBuilder.Append(" ");
+                        }
+
+                        stringBuilder.AppendLine();
+                    }
+
+                    stringBuilder.AppendLine();
+                }
             }
-            return null;
+
+
+            ResultText.Text = stringBuilder.ToString();
+
         }
+
+
+        //=================================================================================================
+
+        //    //http://javatechig.com/xamarin/upload-bitmap-image-to-server-using-http-multipart-in-xamarin-android 
+        //    // Request parameters
+        //queryString["language"] = "unk";
+        //    queryString["detectOrientation "] = "true";
+        //    var uri = "https://api.projectoxford.ai/vision/v1.0/ocr?" + queryString;
+        //    Log.Info(tag, "uri " + uri);
+
+        //    // Request body
+        //    // Bitmap image = Bitmap.CreateBitmap((Bitmap)Resource.Drawable.sign);
+
+        //    // string url =
+        //   // "http://lh4.ggpht.com/_gKQKwLZ8XUs/TAevIEb8FkI/AAAAAAAAC3w/8kMg7Yze__Q/s800/Funny-Signs-Sharp-45.jpg";
+
+        //    byte[] byteData = Encoding.UTF8.GetBytes(ImageFilePath);
+
+        //    using (var fileContent = new ByteArrayContent(byteData))
+        //    {
+
+        //        Log.Info(tag, "fileContent " + fileContent);
+
+        //        fileContent.Headers.ContentType = new MediaTypeHeaderValue("< application/json >");
+
+
+        //        Log.Info(tag, " fileContent.Headers.ContentType " + fileContent.Headers.ContentType);
+
+
+
+        //        //gets sent here with uri and content
+        //        HttpResponseMessage response = await Httpclient.PostAsync(uri, fileContent);
+        //        ResultText.Text = response.ToString();
+
+        //    }
+
     }
 
+
 }
+
+
 

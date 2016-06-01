@@ -13,16 +13,19 @@ using Java.IO;
 using Environment = Android.OS.Environment;
 using Uri = Android.Net.Uri;
 
-public static class App { //added a class here instead of a separate sheet
+public static class App
+{ //added a class here instead of a separate sheet
     public static File _file;
     public static File _dir;
     public static Bitmap bitmap;
-    }
+}
 
 
-namespace OCRRecognition {
+namespace OCRRecognition
+{
     [Activity(Label = "Gallery")]
-    public class Gallery : Activity {
+    public class Gallery : Activity
+    {
 
         //  public static readonly int TaskId = 1000; //An Id that is used to get the right OnActivityResult coming back 
         private ImageView _imageView;
@@ -30,7 +33,8 @@ namespace OCRRecognition {
         //  Uri PicUri;// = Uri.Parse("content://media/external/images/media/5507");
 
 
-        protected override void OnCreate(Bundle savedInstanceState) {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.ImageGallery);
@@ -48,45 +52,50 @@ namespace OCRRecognition {
 
 
 
-            }
+        }
 
-        private async void loadImageClick(object sender, EventArgs e) {
+        private async void loadImageClick(object sender, EventArgs e)
+        {
             //if the app is there load it 
             Bitmap bitmap = await GetImage();
             _imageView.SetImageBitmap(bitmap);
 
-            }
+        }
 
-        async Task<Bitmap> GetImage() {
+        async Task<Bitmap> GetImage()
+        {
             var path = new File(
                 Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
             var filePath = System.IO.Path.Combine(path, "test.jpg");
 
             //true if the caller has the required permissions and path contains the name of an existing file; otherwise, false. This method also returns false if path is null, an invalid path, or a zero-length string.
             //if (System.IO.File.Exists(filePath)) {
-                Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filePath);
-                // _imageView.SetImageBitmap(bitmap);
-                return  bitmap;
-                //   bitmap.Recycle();
-              //  GC.Collect();
+            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filePath);
+            // _imageView.SetImageBitmap(bitmap);
+            return bitmap;
+            //   bitmap.Recycle();
+            //  GC.Collect();
 
-                //  App.bitmap = null;
-                //} else {
-                //Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
-                //return null;
-                //}
-            }
+            //  App.bitmap = null;
+            //} else {
+            //Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
+            //return null;
+            //}
+        }
 
-        private void CreateDirectoryForPictures() {
+        private void CreateDirectoryForPictures()
+        {
             App._dir = new File(
                 Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR");
-            if (!App._dir.Exists()) {
+            if (!App._dir.Exists())
+            {
                 App._dir.Mkdirs();
-                }
             }
+        }
 
 
-        private void pickImageClick(object sender, EventArgs e) {
+        private void pickImageClick(object sender, EventArgs e)
+        {
 
             //camera action
             Intent intent = new Intent(MediaStore.ActionImageCapture);
@@ -95,18 +104,20 @@ namespace OCRRecognition {
 
             //delete the last file so we only have one file called OCR.jpg
             App._file = new File(App._dir, "OCR.jpg");
-            if (App._file.Exists()) {
+            if (App._file.Exists())
+            {
                 App._file.Delete();
-                }
+            }
 
             App._file = new File(App._dir, "OCR.jpg");
             intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(App._file));
 
             StartActivityForResult(intent, 0);
-            }
+        }
 
         //the result of the StartActivityForResult
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data) {
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
             base.OnActivityResult(requestCode, resultCode, data);
 
             // Make it available in the gallery
@@ -130,23 +141,18 @@ namespace OCRRecognition {
             //load the image
             //  Bitmap image = BitmapFactory.DecodeFile(imageFilePath.AbsolutePath);
 
-            if (System.IO.File.Exists(imageFilePath.ToString())) {
+            if (System.IO.File.Exists(imageFilePath.ToString()))
+            {
                 int height = Resources.DisplayMetrics.HeightPixels;
                 int width = _imageView.Height;
 
                 BitmapHelpers.ResizeBitmap(imageFilePath.ToString(), width, height);
-                }
-
-            //if the app is there load it 
-            //if (App.bitmap != null) {
-            //    _imageView.SetImageBitmap(App.bitmap);
-
-            //    App.bitmap = null;
-            //    }
-
-            // Dispose of the Java side bitmap.
-            GC.Collect();
             }
 
+
+            // Dispose of the Java side bitmap.
+         //   GC.Collect();
         }
+
     }
+}

@@ -51,16 +51,12 @@ namespace OCRRecognition
 
             path = new File(
              Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
-            filepath = System.IO.Path.Combine(path, "test.jpg");
+            filepath = System.IO.Path.Combine(path, "small.jpg");
         }
         private void LoadImage(object sender, EventArgs e)
         {
             //https://developer.xamarin.com/guides/xamarin-forms/working-with/images/
             StartActivity(typeof(Gallery));
-            // var beachImage = new Image { Aspect = Aspect.AspectFit };
-            // beachImage.Source = ImageSource.FromFile("waterfront.jpg");
-
-
         }
         private async void SendImage(object sender, EventArgs e)
         {
@@ -77,21 +73,10 @@ namespace OCRRecognition
 
         async Task<Bitmap> GetImage()
         {
-
-
-            //true if the caller has the required permissions and path contains the name of an existing file; otherwise, false. This method also returns false if path is null, an invalid path, or a zero-length string.
-            //if (System.IO.File.Exists(filePath)) {
             Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filepath);
             // _imageView.SetImageBitmap(bitmap);
             return bitmap;
-            //   bitmap.Recycle();
-            //  GC.Collect();
 
-            //  App.bitmap = null;
-            //} else {
-            //Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
-            //return null;
-            //}
         }
 
         //https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fc/console 
@@ -99,12 +84,6 @@ namespace OCRRecognition
         static async void MakeRequest(string ImageFilePath)
         {
 
-            // var uri = Android.Net.Uri.Parse("PathToYourResource"); 
-            //  var Httpclient = new HttpClient();
-            // var queryString = HttpUtility.ParseQueryString(string.Empty);
-
-            // Request headers
-            //  Httpclient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "");
 
             VisionServiceClient VisionServiceClient = new VisionServiceClient("");
 
@@ -126,7 +105,7 @@ namespace OCRRecognition
 
         }
 
-
+        //https://social.msdn.microsoft.com/Forums/vstudio/en-US/5b4f4479-27e9-4d73-a2f3-9a7a5229db55/mvpsample-code-with-vision-sdk-in-c-on-ocr?forum=mlapi
 
         private static void ShowRetrieveText(OcrResults results)
         {
@@ -134,7 +113,7 @@ namespace OCRRecognition
 
             if (results != null && results.Regions != null)
             {
-                stringBuilder.Append("Text: ");
+                stringBuilder.Append("OCR = ");
                 stringBuilder.AppendLine();
                 foreach (var item in results.Regions)
                 {

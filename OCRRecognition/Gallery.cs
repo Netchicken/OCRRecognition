@@ -2,6 +2,7 @@
 //https://developer.xamarin.com/recipes/android/other_ux/camera_intent/take_a_picture_and_save_using_camera_app/
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -9,8 +10,8 @@ using Android.Graphics;
 using Android.OS;
 using Android.Provider;
 using Android.Widget;
-using Java.IO;
 using Environment = Android.OS.Environment;
+using File = Java.IO.File;
 using Uri = Android.Net.Uri;
 
 public static class App
@@ -18,6 +19,8 @@ public static class App
     public static File _file;
     public static File _dir;
     public static Bitmap bitmap;
+
+
 }
 
 
@@ -66,21 +69,12 @@ namespace OCRRecognition
         {
             var path = new File(
                 Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
-            var filePath = System.IO.Path.Combine(path, "test.jpg");
+            var filePath = System.IO.Path.Combine(path, "small.jpg");
 
-            //true if the caller has the required permissions and path contains the name of an existing file; otherwise, false. This method also returns false if path is null, an invalid path, or a zero-length string.
-            //if (System.IO.File.Exists(filePath)) {
             Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filePath);
             // _imageView.SetImageBitmap(bitmap);
             return bitmap;
-            //   bitmap.Recycle();
-            //  GC.Collect();
 
-            //  App.bitmap = null;
-            //} else {
-            //Toast.MakeText(this, "Nope, no image here", ToastLength.Long).Show();
-            //return null;
-            //}
         }
 
         private void CreateDirectoryForPictures()
@@ -99,9 +93,7 @@ namespace OCRRecognition
 
             //camera action
             Intent intent = new Intent(MediaStore.ActionImageCapture);
-
             // App._file = new File(App._dir, String.Format("myPhoto_{0}.jpg", Guid.NewGuid()));
-
             //delete the last file so we only have one file called OCR.jpg
             App._file = new File(App._dir, "OCR.jpg");
             if (App._file.Exists())
@@ -110,6 +102,7 @@ namespace OCRRecognition
             }
 
             App._file = new File(App._dir, "OCR.jpg");
+            //MediaStore – contents of the user’s device: audio (albums, artists, genres, playlists), images (including thumbnails) & video.
             intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(App._file));
 
             StartActivityForResult(intent, 0);
@@ -120,7 +113,7 @@ namespace OCRRecognition
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
-            // Make it available in the gallery
+            // Make it available in the gallery by adding it to the media database
 
             Intent mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile);
             Uri contentUri = Uri.FromFile(App._file);
@@ -131,28 +124,45 @@ namespace OCRRecognition
             // Loading the full sized image will consume too much memory 
             // and cause the application to crash.
 
+            SaveSmallBitmapAsJPG();
+
+        }
+        //http://stackoverflow.com/questions/477572/strange-out-of-memory-issue-while-loading-an-image-to-a-bitmap-object/823966#823966 
+
+
+        public static async void SaveSmallBitmapAsJPG()
+        {
 
             var path = new File(
-                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").Path;
+                           Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath;
+            var smallfilePath = System.IO.Path.Combine(path, "small.jpg");
+            var bigfilePath = System.IO.Path.Combine(path, "OCR.jpg");
 
-            var imagepath = System.IO.Path.Combine(path, "OCR.jpg");
-            //the path to the image
-            var imageFilePath = new File(imagepath);
-            //load the image
-            //  Bitmap image = BitmapFactory.DecodeFile(imageFilePath.AbsolutePath);
+            BitmapFactory.Options opts = new BitmapFactory.Options();
 
-            if (System.IO.File.Exists(imageFilePath.ToString()))
+            // load the image and have BitmapFactory resize it for us.
+            opts.InSampleSize = 4; //  1/4 size
+            opts.InJustDecodeBounds = false; //set to false to get the whole image not just the bounds
+            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(bigfilePath, opts);
+
+
+            //rotate a bmp
+            Matrix matrix = new Matrix();
+            matrix.PostRotate(90);
+            var rotatedBitmap = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, true);
+
+
+            //write it back
+            using (var stream = new FileStream(smallfilePath, FileMode.Create))
             {
-                int height = Resources.DisplayMetrics.HeightPixels;
-                int width = _imageView.Height;
-
-                BitmapHelpers.ResizeBitmap(imageFilePath.ToString(), width, height);
+                await rotatedBitmap.CompressAsync(Bitmap.CompressFormat.Jpeg, 70, stream);//70% compressed
+                stream.Close();
             }
 
-
-            // Dispose of the Java side bitmap.
-         //   GC.Collect();
+            //    await stream.FlushAsync();
+            // Free the native object associated with this bitmap, and clear the reference to the pixel data. This will not free the pixel data synchronously; it simply allows it to be garbage collected if there are no other references. The bitmap is marked as "dead", meaning it will throw an exception if getPixels() or setPixels() is called, and will draw nothing. 
+            //  bitmap.Recycle();
+            //     GC.Collect();
         }
-
     }
 }

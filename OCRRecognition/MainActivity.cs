@@ -49,9 +49,9 @@ namespace OCRRecognition
             loadImage.Click += LoadImage;
             sendImage.Click += SendImage;
 
-            path = new File(
-             Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
-            filepath = System.IO.Path.Combine(path, "small.jpg");
+            //    path = new File(
+            //    Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
+            //   filepath = System.IO.Path.Combine(path, "small.jpg");
         }
         private void LoadImage(object sender, EventArgs e)
         {
@@ -65,7 +65,7 @@ namespace OCRRecognition
             _imageView.SetImageBitmap(bitmap);
 
 
-            MakeRequest(filepath);
+            MakeRequest(App.smallfilePath());
 
 
         }
@@ -73,7 +73,7 @@ namespace OCRRecognition
 
         async Task<Bitmap> GetImage()
         {
-            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filepath);
+            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(App.smallfilePath());
             // _imageView.SetImageBitmap(bitmap);
             return bitmap;
 

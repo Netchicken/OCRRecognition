@@ -16,9 +16,33 @@ using Uri = Android.Net.Uri;
 
 public static class App
 { //added a class here instead of a separate sheet
-    public static File _file;
-    public static File _dir;
-    public static Bitmap bitmap;
+    public static File OCRfile;
+    public static File smallfile;
+    public static File Dir;
+
+    //  private static File path;
+
+
+    public static string GetPath()
+    {
+        return new File(Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath;
+        //  return path;
+    }
+
+    public static string smallfilePath()
+    {
+        var path = System.IO.Path.Combine(GetPath(), "small.jpg");
+        smallfile = new File(path); //return a file
+        return path;  //return a string
+    }
+
+    public static string bigfilePath()
+    {
+        var path = System.IO.Path.Combine(GetPath(), "OCR.jpg");
+        OCRfile = new File(path); //return a file
+        return path;  //return a string
+    }
+
 
 
 }
@@ -67,11 +91,11 @@ namespace OCRRecognition
 
         async Task<Bitmap> GetImage()
         {
-            var path = new File(
-                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
-            var filePath = System.IO.Path.Combine(path, "small.jpg");
+            //var path = new File(
+            //    Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath.ToString();
+            //var filePath = System.IO.Path.Combine(path, "small.jpg");
 
-            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(filePath);
+            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(App.smallfilePath());
             // _imageView.SetImageBitmap(bitmap);
             return bitmap;
 
@@ -79,11 +103,12 @@ namespace OCRRecognition
 
         private void CreateDirectoryForPictures()
         {
-            App._dir = new File(
-                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR");
-            if (!App._dir.Exists())
+            App.Dir = new File(App.GetPath()); //get the directory path
+
+            //if the folder doesn't exist then make it
+            if (!App.Dir.Exists())
             {
-                App._dir.Mkdirs();
+                App.Dir.Mkdir();
             }
         }
 
@@ -93,17 +118,9 @@ namespace OCRRecognition
 
             //camera action
             Intent intent = new Intent(MediaStore.ActionImageCapture);
-            // App._file = new File(App._dir, String.Format("myPhoto_{0}.jpg", Guid.NewGuid()));
-            //delete the last file so we only have one file called OCR.jpg
-            App._file = new File(App._dir, "OCR.jpg");
-            if (App._file.Exists())
-            {
-                App._file.Delete();
-            }
 
-            App._file = new File(App._dir, "OCR.jpg");
             //MediaStore – contents of the user’s device: audio (albums, artists, genres, playlists), images (including thumbnails) & video.
-            intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(App._file));
+            intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(App.OCRfile));
 
             StartActivityForResult(intent, 0);
         }
@@ -116,13 +133,12 @@ namespace OCRRecognition
             // Make it available in the gallery by adding it to the media database
 
             Intent mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile);
-            Uri contentUri = Uri.FromFile(App._file);
+
+            //   App.OCRfile = new File(App.bigfilePath());
+            Uri contentUri = Uri.FromFile(App.OCRfile);
             mediaScanIntent.SetData(contentUri);
             SendBroadcast(mediaScanIntent); //tell everything about the new pic?
 
-            // Display in ImageView. We will resize the bitmap to fit the display
-            // Loading the full sized image will consume too much memory 
-            // and cause the application to crash.
 
             SaveSmallBitmapAsJPG();
 
@@ -133,17 +149,17 @@ namespace OCRRecognition
         public static async void SaveSmallBitmapAsJPG()
         {
 
-            var path = new File(
-                           Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath;
-            var smallfilePath = System.IO.Path.Combine(path, "small.jpg");
-            var bigfilePath = System.IO.Path.Combine(path, "OCR.jpg");
+            //  var path = new File(
+            //                Environment.GetExternalStoragePublicDirectory(Environment.DirectoryPictures), "OCR").AbsolutePath;
+            //   var smallfilePath = System.IO.Path.Combine(path, "small.jpg");
+            //   var bigfilePath = System.IO.Path.Combine(path, "OCR.jpg");
 
             BitmapFactory.Options opts = new BitmapFactory.Options();
 
             // load the image and have BitmapFactory resize it for us.
             opts.InSampleSize = 4; //  1/4 size
             opts.InJustDecodeBounds = false; //set to false to get the whole image not just the bounds
-            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(bigfilePath, opts);
+            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(App.bigfilePath(), opts);
 
 
             //rotate a bmp
@@ -153,7 +169,7 @@ namespace OCRRecognition
 
 
             //write it back
-            using (var stream = new FileStream(smallfilePath, FileMode.Create))
+            using (var stream = new FileStream(App.smallfilePath(), FileMode.Create))
             {
                 await rotatedBitmap.CompressAsync(Bitmap.CompressFormat.Jpeg, 70, stream);//70% compressed
                 stream.Close();

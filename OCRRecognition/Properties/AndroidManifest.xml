@@ -4,5 +4,5 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<application android:label="OCRRecognition"></application>
+	<application android:label="OCRRecognition" android:theme="@style/MyTheme" android:icon="@drawable/OCR"></application>
 </manifest>

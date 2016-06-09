@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
@@ -12,47 +12,66 @@
         android:id="@+id/linearLayout2">
         <Button
             android:id="@+id/LoadImage"
-            android:text="Load Image"
-            android:layout_width="wrap_content"
+            android:text="Take Picture"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
         <Button
-            android:text="Send Image"
+            android:text="Review Pic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ReviewPic"
+            android:layout_weight="1" />
+        <Button
+            android:text="Send Image To OCR"
             android:id="@+id/SendImage"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
     </LinearLayout>
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView1">
-        <LinearLayout
-            android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:id="@+id/linearLayout3"
+        android:layout_below="@id/linearLayout2">
+        <ScrollView
             android:minWidth="25px"
             android:minHeight="25px"
+            android:id="@+id/scrollView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/linearLayout1">
-            <TextView
-                android:text="The Text is ...."
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
+                android:minWidth="25px"
+                android:minHeight="25px"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView1" />
-            <EditText
-                android:inputType="textMultiLine"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/TextResult"
-                android:textSize="25dp"
-                android:focusable="false" />
-            <ImageView
-                android:src="@android:drawable/ic_menu_gallery"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView1" />
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout1">
+                <EditText
+                    android:inputType="textMultiLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/TextResult"
+                    android:textSize="20dp"
+                    android:focusable="true" />
+                <WebView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/webView1"
+                    android:visibility="visible"
+                    android:layout_gravity="center_horizontal"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    tools:visibility="visible"
+                    android:clickable="true" />
+                <ImageView
+                    android:src="@drawable/ocr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView1" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>

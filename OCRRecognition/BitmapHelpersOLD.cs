@@ -17,7 +17,7 @@ using File = Java.IO.File;
 
 namespace OCRRecognition
 {
-    public static class BitmapHelpers
+    public static class BitmapHelpersOLD
     {
         private static string tag = "aaaaa";
 
